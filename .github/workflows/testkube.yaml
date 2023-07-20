@@ -29,6 +29,9 @@ on:
         type: choice
         options:
         - us-east-1
+    secrets:
+      AWS_ROLE_ARN:
+        required: true
   workflow_call:
     inputs:
       TESTSUITE:        # Name of Testsuite to run
