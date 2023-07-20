@@ -75,7 +75,7 @@ jobs:
           chmod +x kubectl
           mv ./kubectl /usr/local/bin/kubectl
 
-          wget -o https://github.com/kubeshop/testkube/releases/download/v1.13.3/testkube_1.13.3_Linux_x86_64.tar.gz
+          wget -Lo https://github.com/kubeshop/testkube/releases/download/v1.13.3/testkube_1.13.3_Linux_x86_64.tar.gz
           ls -l testkube_1.13.3_Linux_x86_64.tar.gz
           gunzip testkube_1.13.3_Linux_x86_64.tar.gz
           tar -xvf testkube_1.13.3_Linux_x86_64.tar
