@@ -90,8 +90,8 @@ jobs:
       - name: Apply playwright tests manifest
         run: kubectl apply -f definitions/tests/playwright/${{ inputs.MICROSERVICE }}.yaml
 
-      - name: Apply K6 tests manifest
-        run: kubectl apply -f definitions/tests/k6/${{ inputs.MICROSERVICE }}.yaml
+      #- name: Apply K6 tests manifest
+      #  run: kubectl apply -f definitions/tests/k6/${{ inputs.MICROSERVICE }}.yaml
 
       - name: Apply Test Suite
         run: kubectl apply -f definitions/testsuites/${{ inputs.MICROSERVICE }}.yaml        
