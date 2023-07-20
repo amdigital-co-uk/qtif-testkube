@@ -47,6 +47,9 @@ on:
       REGION:           # Set Region to find the cluster in
         type: string
         default: us-east-1
+    outputs:
+      result: ${{ jobs.testkube.outputs.result }}
+
     secrets:
       PIPELINE_ECR_ARN :
         required: true
@@ -54,8 +57,8 @@ on:
 jobs:
   testkube:
     runs-on: ubuntu-latest
-    #outputs:
-      #output1: ${{ steps.results.outputs.result }}
+    outputs:
+      result: ${{ steps.results.outputs.result }}
     steps:
       # Checks-out repository
       - name: Checkout repository
@@ -100,13 +103,23 @@ jobs:
         run: kubectl testkube run testsuite ${{ inputs.TESTSUITE }} -n testkube -v NAMESPACE=${{ inputs.NAMESPACE }} --watch | tee results.txt
 
       - name: Get test status
+        id: results
         run: | 
           executionId=$(cat results.txt | grep "Execution ID" | head -n1 | awk '{print $4}' | sed -e 's/\x1b\[[0-9;]*m//g')
           echo "Execution ID = ${executionId}"
           kubectl testkube get tse ${executionId} -o json > results.json
           result=$(jq .status results.json | jq -r)
           echo "result=${result}" >> $GITHUB_OUTPUT
-          echo "Tests Result = ${result}"
+
+      - name: Appraise and report result
+        if: ${{steps.results.output.result == 'passed'}}
+        run: echo "Tests Result = ${steps.results.output.result}"
+
+      - name: Appraise and report result
+        if: ${{steps.results.output.result == 'failed'}}
+        run: echo "Tests Result = ${steps.results.output.result}" && exit 1
+
+        
 
 
 
