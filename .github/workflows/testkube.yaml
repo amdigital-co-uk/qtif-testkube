@@ -47,12 +47,13 @@ on:
       REGION:           # Set Region to find the cluster in
         type: string
         default: us-east-1
-    outputs:
-      result:
-        value: ${{ jobs.testkube.outputs.result }}
     secrets:
       PIPELINE_ECR_ARN :
         required: true
+    outputs:
+      result:
+        value: ${{ jobs.testkube.outputs.result }}
+    
 
 jobs:
   testkube:
