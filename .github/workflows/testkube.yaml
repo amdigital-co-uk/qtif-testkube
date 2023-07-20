@@ -101,10 +101,10 @@ jobs:
 
       - name: Get test status
         run: | 
-          executionId=$(cat results.txt | grep "Execution ID" | head -n1 | awk '{print $4}' )
+          executionId=$(cat results.txt | grep "Execution ID" | head -n1 | awk '{print $4} | xargs' )
           echo "Execution ID = ${executionId}"
           kubectl testkube get tse ${executionId} -o json > results.json
-          result=$(jq .stepResults.execution.executionResult.status results.json | jq -r)
+          result=$(jq .status results.json | jq -r)
           echo "result=${result}" >> $GITHUB_OUTPUT
           echo "Tests Result = ${result}"
 
