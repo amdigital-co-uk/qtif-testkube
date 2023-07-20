@@ -48,8 +48,8 @@ on:
         type: string
         default: us-east-1
     outputs:
-      result: ${{ jobs.testkube.outputs.result }}
-
+      result:
+        value: ${{ jobs.testkube.outputs.result }}
     secrets:
       PIPELINE_ECR_ARN :
         required: true
