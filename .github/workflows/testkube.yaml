@@ -5,6 +5,30 @@ permissions:
   contents: read
 
 on:
+  workflow_dispatch:
+    inputs:
+      TESTSUITE:
+        description: "Name of Testsuite to run"
+        required: true
+        type: string
+      MICROSERVICE:
+        description: "Name of the GitHub repository to update and run Testkube for"
+        required: true
+      NAMESPACE:
+        description: "Namespace of request objects to include"
+        required: true
+      CLUSTER_NAME:
+        description: "Cluster name to run testkube under"
+        type: choice
+        options:
+        - quartex-production
+        - quartex-dev-01
+        - quartex-development
+      REGION:
+        description: "Set Region to find the cluster in"
+        type: choice
+        options:
+        - us-east-1
   workflow_call:
     inputs:
       TESTSUITE:        # Name of Testsuite to run
@@ -29,6 +53,8 @@ on:
 jobs:
   testkube:
     runs-on: ubuntu-latest
+    #outputs:
+      #output1: ${{ steps.results.outputs.result }}
     steps:
       # Checks-out repository
       - name: Checkout repository
@@ -69,7 +95,17 @@ jobs:
         run: kubectl apply -f definitions/testsuites/${{ inputs.MICROSERVICE }}.yaml        
 
       - name: Run Test Suite
-        run: kubectl testkube run testsuite ${{ inputs.TESTSUITE }} -n ${{ inputs.NAMESPACE }} -v NAMESPACE=${{ inputs.NAMESPACE }} --watch
+        run: kubectl testkube run testsuite ${{ inputs.TESTSUITE }} -n testkube -v NAMESPACE=${{ inputs.NAMESPACE }} --watch
+
+      - name: Get test status
+        run: | 
+          executionId=$(cat results.txt | grep "Execution ID" | awk '{print $4}')
+          echo "Execution ID = ${executionId}"
+          kubectl testkube get tse ${executionId} -o json > results.json
+          result=$(jq .stepResults.execution.executionResult.status results.json | jq -r)
+          echo "result=${result}" >> $GITHUB_OUTPUT
+          echo "Tests Result = ${result}"
+
 
 
 

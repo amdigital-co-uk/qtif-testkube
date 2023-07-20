@@ -1,4 +1,4 @@
-apiVersion: tests.testkube.io/v3
+apiVersion: tests.testkube.io/v2
 kind: TestSuite
 metadata:
   name: qtms-bookmarks-test-suite
@@ -6,6 +6,7 @@ metadata:
 spec:
   description: "QTMS Bookmarks Test Suite"
   steps:
-  - stopOnFailure: true
-    execute:
-    - test: qtms-bookmarks-playwright
+  - execute:
+      stopOnFailure: true
+      namespace: testkube
+      name: qtms-bookmarks-playwright
