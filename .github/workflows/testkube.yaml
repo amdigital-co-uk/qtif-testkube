@@ -1,0 +1,80 @@
+# CI workflow for running testkube test suites 
+name: Run Testkube test suite for MS
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      TESTSUITE:        # Name of Testsuite to run
+        required: true
+        type: string
+      MICROSERVICE:     # Name of the GitHub repository to update and run Testkube for
+        required: true
+        type: string
+      NAMESPACE:        # Namespace of request objects to include
+        required: true
+        type: string
+      CLUSTER_NAME:     # Cluster name to run testkube under
+        type: string
+        default: quartex-production
+      REGION:           # Set Region to find the cluster in
+        type: string
+        default: us-east-1
+    secrets:
+      AWS_ROLE_ARN:
+        required: true
+
+jobs:
+  testkube:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials (ECR_REGION_1)
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-duration-seconds: 900
+          aws-region: us-east-1
+
+      # Install kubectl and testkube clis
+      - name: Install dependancies
+        run: |
+          curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.22.17/2023-05-11/bin/linux/amd64/kubectl
+          chmod +x kubectl
+          mv ./kubectl /usr/local/bin/kubectl
+
+          wget -qO - https://repo.testkube.io/key.pub | apt-key add -
+          echo "deb https://repo.testkube.io/linux linux main" | tee -a /etc/apt/sources.list
+          apt-get update
+          apt-get install -y testkube
+
+      - name: Configure EKS Cluster access
+        run: aws eks update-kubeconfig --name ${{ inputs.CLUSTER_NAME }} --region ${{ inputs.REGION }} 
+      
+      - name: Apply sources manifest
+        run: kubectl apply -f definitions/repos/${{ inputs.MICROSERVICE }}.yaml
+
+      - name: Apply playwright tests manifest
+        run: kubectl apply -f definitions/tests/playwright/${{ inputs.MICROSERVICE }}.yaml
+
+      - name: Apply K6 tests manifest
+        run: kubectl apply -f definitions/tests/k6/${{ inputs.MICROSERVICE }}.yaml
+
+      - name: Apply Test Suite
+        run: kubectl apply -f definitions/testsuites/${{ inputs.MICROSERVICE }}.yaml        
+
+      - name: Run Test Suite
+        run: kubectl testkube run testsuite ${{ inputs.TESTSUITE }} -n ${{ inputs.NAMESPACE }} -v NAMESPACE=${{ inputs.NAMESPACE }} --watch
+
+
+
+
+      
+
+
+

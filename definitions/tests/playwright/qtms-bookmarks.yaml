@@ -14,20 +14,3 @@ spec:
       branch: main
       path: tests/playwright
   source: qtms-bookmarks-api-tests
-  executionRequest:
-    variables:
-      NAMESPACE:
-        name: NAMESPACE
-        value: "dev-7"
-        type: basic
-      #NAMESPACE:
-        #name: CLIENT
-        #value: "robert-primary"
-        #type: basic
-    jobTemplate: |
-      apiVersion: batch/v1
-      kind: Job
-      spec:
-        template:
-          spec:
-            serviceAccountName: testkube-poc
