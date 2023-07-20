@@ -29,9 +29,7 @@ on:
         type: choice
         options:
         - us-east-1
-    secrets:
-      AWS_ROLE_ARN:
-        required: true
+
   workflow_call:
     inputs:
       TESTSUITE:        # Name of Testsuite to run
@@ -50,7 +48,7 @@ on:
         type: string
         default: us-east-1
     secrets:
-      AWS_ROLE_ARN:
+      PIPELINE_TESTS_ARN :
         required: true
 
 jobs:
@@ -66,9 +64,9 @@ jobs:
       - name: Configure AWS credentials (ECR_REGION_1)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-to-assume: ${{ secrets.PIPELINE_TESTS_ARN }}
           role-duration-seconds: 900
-          aws-region: us-east-1
+          aws-region: ${{ inputs.REGION }}
 
       # Install kubectl and testkube clis
       - name: Install dependancies
