@@ -97,7 +97,7 @@ jobs:
         run: kubectl apply -f definitions/testsuites/${{ inputs.MICROSERVICE }}.yaml        
 
       - name: Run Test Suite
-        run: kubectl testkube run testsuite ${{ inputs.TESTSUITE }} -n testkube -v NAMESPACE=${{ inputs.NAMESPACE }} --watch
+        run: kubectl testkube run testsuite ${{ inputs.TESTSUITE }} -n testkube -v NAMESPACE=${{ inputs.NAMESPACE }} --watch | tee results.txt
 
       - name: Get test status
         run: | 
