@@ -1,0 +1,33 @@
+apiVersion: tests.testkube.io/v3
+kind: Test
+metadata:
+  name: qtms-bookmarks-playwright
+  namespace: testkube
+  labels:
+    executor: playwright-executor
+    ms: bookmarks
+    test-type: playwright-test
+spec:
+  type: playwright/test
+  content:
+    repository:
+      branch: main
+      path: tests/playwright
+  source: qtms-bookmarks-api-tests
+  executionRequest:
+    variables:
+      NAMESPACE:
+        name: NAMESPACE
+        value: "dev-7"
+        type: basic
+      #NAMESPACE:
+        #name: CLIENT
+        #value: "robert-primary"
+        #type: basic
+    jobTemplate: |
+      apiVersion: batch/v1
+      kind: Job
+      spec:
+        template:
+          spec:
+            serviceAccountName: testkube-poc

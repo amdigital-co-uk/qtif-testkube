@@ -1,0 +1,16 @@
+apiVersion: tests.testkube.io/v1
+kind: TestSource
+metadata:
+  name: qtms-bookmarks-api-tests
+  namespace: testkube
+spec:
+  repository:
+    type: git
+    uri: https://github.com/amdigital-co-uk/qtms-bookmarks-api-tests.git
+    branch: main
+    usernameSecret:
+      name: testkube-poc-credentials
+      key: git-username
+    tokenSecret:
+      name: testkube-poc-credentials
+      key: git-token

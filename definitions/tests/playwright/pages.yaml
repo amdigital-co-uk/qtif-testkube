@@ -1,0 +1,33 @@
+apiVersion: tests.testkube.io/v3
+kind: Test
+metadata:
+  name: pages-playwright
+  namespace: testkube
+  labels:
+    executor: playwright-executor
+    ms: pages
+    test-type: playwright-test
+spec:
+  type: playwright/test
+  content:
+    repository:
+      branch: main
+      path: tests/playwright
+  source: testkube-poc
+  executionRequest:
+    variables:
+      NAMESPACE:
+        name: NAMESPACE
+        value: "dev-10"
+        type: basic
+      NAMESPACE:
+        name: CLIENT
+        value: "robert-primary"
+        type: basic
+    jobTemplate: |
+      apiVersion: batch/v1
+      kind: Job
+      spec:
+        template:
+          spec:
+            serviceAccountName: testkube-poc

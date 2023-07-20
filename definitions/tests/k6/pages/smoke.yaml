@@ -1,0 +1,33 @@
+apiVersion: tests.testkube.io/v3
+kind: Test
+metadata:
+  name: example
+  namespace: testkube
+  labels:
+    executor: k6-executor
+    ms: pages
+    test-type: k6-script
+spec:
+  type: k6/script
+  content:
+    repository:
+      branch: main
+      path: tests/k6/pages/smoke.js
+  source: testkube-poc
+  executionRequest:
+    variables:
+      NAMESPACE:
+        name: NAMESPACE
+        value: "dev-10"
+        type: basic
+      NAMESPACE:
+        name: CLIENT
+        value: "robert-primary"
+        type: basic
+    jobTemplate: |
+      apiVersion: batch/v1
+      kind: Job
+      spec:
+        template:
+          spec:
+            serviceAccountName: testkube-poc
