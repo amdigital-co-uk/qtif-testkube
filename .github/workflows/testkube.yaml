@@ -48,7 +48,7 @@ on:
         type: string
         default: us-east-1
     secrets:
-      PIPELINE_TESTS_ARN :
+      PIPELINE_ECR_ARN :
         required: true
 
 jobs:
@@ -64,7 +64,7 @@ jobs:
       - name: Configure AWS credentials (ECR_REGION_1)
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.PIPELINE_TESTS_ARN }}
+          role-to-assume: ${{ secrets.PIPELINE_ECR_ARN }}
           role-duration-seconds: 900
           aws-region: ${{ inputs.REGION }}
 
