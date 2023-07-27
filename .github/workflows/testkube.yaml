@@ -64,6 +64,8 @@ jobs:
       # Checks-out repository
       - name: Checkout repository
         uses: actions/checkout@v2
+        with: 
+          repository: amdigital-co-uk/qtif-testkube
 
       - name: Configure AWS credentials (ECR_REGION_1)
         uses: aws-actions/configure-aws-credentials@v2
